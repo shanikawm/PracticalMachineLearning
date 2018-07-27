@@ -1,4 +1,6 @@
 # Practical Machine Learning
+# Peer-graded Assignment : Prediction Assignment Writeup
+### Shanika Amarasoma [2018-07-27]
 ## Background
 Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These types of devices are part of the quantified self-movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset). The goal of your project is to predict the manner in which they did the exercise. This is the "classe" variable in the training set. 
 
@@ -23,7 +25,7 @@ dim(testing)
 Data set having many parameters. So, we need to cleanse data
 
 ## Data cleansing
-Since testing set has less data we’ll try to cleanse testing data set select columns having complete data set
+Since testing set has less data we’ll try to cleanse the testing data set by selectins columns having complete data set
 
 ```R
 names(testing[,colSums(is.na(testing)) == 0])
@@ -48,8 +50,8 @@ test_data <- testing[,c(features,"problem_id")]
 dim(test_data)
 [1] 20 53
 ```
-So, we have 53 clean parameters.
-No we'll make sure training set will also have complete data for the same set of columns
+So, we have 52 clean parameters.
+Now we'll make sure training data set will also have complete data for the same set of columns
 ```R
 names(training[,colSums(is.na(training)) == 0])
  [1] "X"                       "user_name"               "raw_timestamp_part_1"    "raw_timestamp_part_2"    "cvtd_timestamp"         
@@ -72,16 +74,16 @@ names(training[,colSums(is.na(training)) == 0])
 [86] "gyros_forearm_z"         "accel_forearm_x"         "accel_forearm_y"         "accel_forearm_z"         "magnet_forearm_x"       
 [91] "magnet_forearm_y"        "magnet_forearm_z"        "classe"  
 ```
-Training set having move complete parameter set including above selected 53 parameters.
+Training set having even more complete parameter set including above selected 52 parameters.
 ```R
 train_data <- training[,c(features,"classe")]
 dim(train_data)
 [1] 19622    53
 ```
-No our feature set is OK.
+Now our feature set is OK.
 
 ## Partitioning the Data Set
-Now we'll partition the data set for model training and cross validation. We'll need to load caret package and set seed for reproduce the same result if needed. 
+Now we'll partition the data set for model training and cross validation testing. We'll need to load caret package and set seed for reproduce the same result if needed. 
 ```R
 library(caret)
 set.seed(1981)
@@ -94,7 +96,7 @@ dim(model_train)
 [1] 13737    53
 ```
 ## Random Forest Algorithm
-First we'll just try the Random forest algorithm since it is very often accurate. 
+First we'll try the Random forest algorithm since it is often very accurate . 
 ```R
 modFit<-train(classe ~ ., data = model_train, method = "rf",prox=TRUE)
 modFit
@@ -138,7 +140,7 @@ Prediction    A    B    C    D    E
  ```
  Accuracy is 0.9885
  
- Little bit of futher research trainControl described in https://www.rdocumentation.org/packages/caret/versions/6.0-80/topics/trainControl is added to the function and did the same.
+After little bit of futher research trainControl described in https://www.rdocumentation.org/packages/caret/versions/6.0-80/topics/trainControl is added to the function and did the same.
 ```R
 modFit<-train(classe ~ ., data = model_train, method = "rf", trControl=trainControl(method="cv",number=10),prox=TRUE,verbose=TRUE,allowParallel=TRUE)
 save(modFit,file="modfit2.rda")
@@ -177,10 +179,11 @@ Prediction    A    B    C    D    E
                             
  Accuracy (average) : 0.9918
 ```
+Accuracy is even better with that change. 
 Now we'll apply this model to new data set and see the result.
 ```R
 predict(modFit,testing)
  [1] B A B A A E D B A A B C B A E E A B B B
 Levels: A B C D E
 ```
-Note: caret, randomForest and e1071 had to install to for this model building. RStudio automatically handled any other dependancy package. 
+Note: caret, randomForest and e1071 R packages had to install for this model building. RStudio automatically handled any other dependancy package. 
