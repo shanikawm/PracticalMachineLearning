@@ -22,7 +22,7 @@ dim(training)
 dim(testing)
 [1]  20 160
 ```
-Data set having many parameters. So, we need to cleanse data
+Data set having many parameters. So, we need to cleanse data set and select a set of features. 
 
 ## Data cleansing
 Since testing set has less data we’ll try to cleanse the testing data set by selectins columns having complete data set
