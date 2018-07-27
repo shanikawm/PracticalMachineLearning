@@ -93,7 +93,94 @@ dim(model_test)
 dim(model_train)
 [1] 13737    53
 ```
-## Trying Random Forest Algorithm
-We'll just try the Random forest algorithm and see the accuracy. 
+## Random Forest Algorithm
+First we'll just try the Random forest algorithm since it is very often accurate. 
+```R
+modFit<-train(classe ~ ., data = model_train, method = "rf",prox=TRUE)
+modFit
+Random Forest 
 
+13737 samples
+   52 predictor
+    5 classes: 'A', 'B', 'C', 'D', 'E' 
 
+No pre-processing
+Resampling: Bootstrapped (25 reps) 
+Summary of sample sizes: 13737, 13737, 13737, 13737, 13737, 13737, ... 
+Resampling results across tuning parameters:
+
+  mtry  Accuracy   Kappa    
+   2    0.9883830  0.9853103
+  27    0.9884621  0.9854106
+  52    0.9780830  0.9722868
+
+Accuracy was used to select the optimal model using the largest value.
+The final value used for the model was mtry = 27.
+save(modFit,file='modfit.rda')
+```
+This command actually took 5-6 Hours to complete. Now will use the confusionMatrix function described in https://www.rdocumentation.org/packages/caret/versions/6.0-80/topics/confusionMatrix to see the accuracy with our test data set prediction cross validation
+
+```R
+confusionMatrix(modFit, newdata = predict(modFit, newdata = model_test))
+Bootstrapped (25 reps) Confusion Matrix 
+
+(entries are percentual average cell counts across resamples)
+ 
+          Reference
+Prediction    A    B    C    D    E
+         A 28.1  0.2  0.0  0.0  0.0
+         B  0.1 19.0  0.2  0.0  0.0
+         C  0.0  0.1 17.2  0.3  0.0
+         D  0.0  0.0  0.1 16.3  0.1
+         E  0.0  0.0  0.0  0.0 18.3
+                            
+ Accuracy (average) : 0.9885
+ ```
+ Accuracy is 0.9885
+ 
+ Little bit of futher research trainControl described in https://www.rdocumentation.org/packages/caret/versions/6.0-80/topics/trainControl is added to the function and did the same.
+```R
+modFit<-train(classe ~ ., data = model_train, method = "rf", trControl=trainControl(method="cv",number=10),prox=TRUE,verbose=TRUE,allowParallel=TRUE)
+save(modFit,file="modfit2.rda")
+modFit
+Random Forest 
+
+13737 samples
+   52 predictor
+    5 classes: 'A', 'B', 'C', 'D', 'E' 
+
+No pre-processing
+Resampling: Cross-Validated (10 fold) 
+Summary of sample sizes: 12363, 12363, 12361, 12365, 12364, 12364, ... 
+Resampling results across tuning parameters:
+
+  mtry  Accuracy   Kappa    
+   2    0.9917749  0.9895943
+  27    0.9918476  0.9896860
+  52    0.9884265  0.9853568
+
+Accuracy was used to select the optimal model using the largest value.
+The final value used for the model was mtry = 27.
+
+confusionMatrix(modFit, newdata = predict(modFit, newdata = model_test))
+Cross-Validated (10 fold) Confusion Matrix 
+
+(entries are percentual average cell counts across resamples)
+ 
+          Reference
+Prediction    A    B    C    D    E
+         A 28.4  0.2  0.0  0.0  0.0
+         B  0.0 19.1  0.1  0.0  0.0
+         C  0.0  0.1 17.2  0.2  0.0
+         D  0.0  0.0  0.1 16.2  0.1
+         E  0.0  0.0  0.0  0.0 18.3
+                            
+ Accuracy (average) : 0.9918
+```
+Now we'll apply this model to new data set and see the result.
+```R
+predict(modFit,testing)
+ [1] B A B A A E D B A A B C B A E E A B B B
+Levels: A B C D E
+```
+Note: caret, randomForest and e1071 had to install to for this model building. RStudio automatically handled any other dependancy package. 
