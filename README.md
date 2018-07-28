@@ -140,7 +140,7 @@ Prediction    A    B    C    D    E
  ```
  Accuracy is 0.9885
  
-After little bit of futher research trainControl described in https://www.rdocumentation.org/packages/caret/versions/6.0-80/topics/trainControl is added to the function and did the same.
+After little bit of futher research, trainControl described in https://www.rdocumentation.org/packages/caret/versions/6.0-80/topics/trainControl was added to the function and executed the same.
 ```R
 modFit<-train(classe ~ ., data = model_train, method = "rf", trControl=trainControl(method="cv",number=10),prox=TRUE,verbose=TRUE,allowParallel=TRUE)
 save(modFit,file="modfit2.rda")
@@ -179,7 +179,7 @@ Prediction    A    B    C    D    E
                             
  Accuracy (average) : 0.9918
 ```
-Accuracy is even better with that change. 
+Accuracy is even better with that change and seems Random Forest Algorithm is the best model for this prediction. 
 Now we'll apply this model to new data set and see the result.
 ```R
 predict(modFit,testing)
